@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
@@ -26,8 +28,8 @@ public class Johnathan_X {
     public DcMotor motorFL, motorFR, motorBL, motorBR;
     public DcMotor[] allDriveMotors;
 
-    public IMU imu;
-    private IMU.Parameters parameters;
+    /*public IMU imu;
+    private IMU.Parameters parameters;*/
     public AprilTagProcessor aprilTag;
     public VisionPortal visionPortal;
     private static final boolean USE_WEBCAM = true;
@@ -37,11 +39,143 @@ public class Johnathan_X {
     //I don't use comments
     public Johnathan_X(OpMode opmode, Drivetrain drivetrain){
         this.teleop = opmode;
-        //this.hwMap = opmode.hardwareMap;
+        this.hwMap = opmode.hardwareMap;
         this.drive = drivetrain;
         this.telem = opmode.telemetry;
-        //setupHardware();
-
+        setupHardware();
     }
+    public Johnathan_X(LinearOpMode opmode, Drivetrain drivetrain){
+        this.auton = opmode;
+        this.hwMap = opmode.hardwareMap;
+        this.drive = drivetrain;
+        this.telem = opmode.telemetry;
+        setupHardware();
+    }
+
+    public Johnathan_X(HardwareMap hardwareMap, Drivetrain drivetrain){
+        this.hwMap = hardwareMap;
+        this.drive = drivetrain;
+        setupHardware();
+    }
+
+    public void setupHardware(){
+        switch (drive){
+            case JOHNX:
+                motorFL = hwMap.dcMotor.get("motorFL");
+                motorFR = hwMap.dcMotor.get("motorFR");
+                motorBL = hwMap.dcMotor.get("motorBL");
+                motorBR = hwMap.dcMotor.get("motorBR");
+
+                allDriveMotors = new DcMotor[]{motorBR,motorBL,motorFL,motorFR};
+                motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
+                motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
+
+                /*parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                        RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
+                        RevHubOrientationOnRobot.UsbFacingDirection.LEFT));
+                imu.initialize(parameters);*/
+                break;
+            //TEST
+            case TEST:
+                motorFL = hwMap.dcMotor.get("motorFL");
+                motorFR = hwMap.dcMotor.get("motorFR");
+                motorBL = hwMap.dcMotor.get("motorBL");
+                motorBR = hwMap.dcMotor.get("motorBR");
+
+                allDriveMotors = new DcMotor[]{motorBR,motorBL,motorFL,motorFR};
+                motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
+                motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
+
+                /*parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                        RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
+                        RevHubOrientationOnRobot.UsbFacingDirection.LEFT));
+                imu.initialize(parameters);*/
+                break;
+
+        }
+    }
+
+    public void rest(){
+        motorFL.setPower(0);
+        motorFL.setPower(0);
+        motorBL.setPower(0);
+        motorBR.setPower(0);
+    }
+    public void move(double x, double y, double turn) {
+        double denominator;
+        double FL_Power;
+        double FR_Power;
+        double BL_Power;
+        double BR_Power;
+
+        switch (drive) {
+            //Johnny 9 movement code AKA BigJ
+            case JOHNX:
+                denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(turn), 1);
+
+                FL_Power = (y + x + turn) / denominator;
+                FR_Power = (y - x - turn) / denominator;
+                BL_Power = (y - x + turn) / denominator;
+                BR_Power = (y + x - turn) / denominator;
+                telem.addLine("frontLeft:" + FL_Power);
+                telem.addLine("FrontRight:" + FR_Power);
+                telem.addLine("BackLeft:" + BL_Power);
+                telem.addLine("BackRight:" + BR_Power);
+
+                motorFL.setPower(FL_Power);
+                motorFR.setPower(FR_Power);
+                motorBL.setPower(BL_Power);
+                motorBR.setPower(BR_Power);
+                break;
+            // Test is identical for now, but can be changed if needed.
+            case TEST:
+                denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(turn), 1);
+
+                FL_Power = (y + x + turn) / denominator;
+                FR_Power = (y - x - turn) / denominator;
+                BL_Power = (y - x + turn) / denominator;
+                BR_Power = (y + x - turn) / denominator;
+                telem.addLine("frontLeft:" + FL_Power);
+                telem.addLine("FrontRight:" + FR_Power);
+                telem.addLine("BackLeft:" + BL_Power);
+                telem.addLine("BackRight:" + BR_Power);
+
+                motorFL.setPower(FL_Power);
+                motorFR.setPower(FR_Power);
+                motorBL.setPower(BL_Power);
+                motorBR.setPower(BR_Power);
+                break;
+        }
+    }
+    public void waitForMotors() {
+        boolean finished = false;
+        while (auton.opModeIsActive() && !finished && !auton.isStopRequested()) {
+            if (!motorFL.isBusy() && !motorFR.isBusy() && !motorBL.isBusy() && !motorBR.isBusy()) {
+                finished = true;
+            }
+        }
+    }
+    private void resetDriveEncoders() {
+        for (DcMotor x : allDriveMotors) {
+            x.setPower(0);
+            x.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            x.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+    }
+    public void moveForwardInches(double inches, double speed) {
+        //Converts to integer by rounding. CASTS to int after rounding.
+        int tickTarget = (int) Math.round(-inches * Y_INCH_TICKS);
+        resetDriveEncoders();
+        for (DcMotor x : allDriveMotors) {
+
+            x.setTargetPosition(tickTarget);
+            x.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        }
+        move(0, speed, 0);
+       // waitForMotors();
+        resetDriveEncoders();
+    }
+
 
 }
