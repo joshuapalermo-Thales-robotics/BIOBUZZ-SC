@@ -117,10 +117,6 @@ public class Johnathan_X {
                 FR_Power = (y - x - turn) / denominator;
                 BL_Power = (y - x + turn) / denominator;
                 BR_Power = (y + x - turn) / denominator;
-                telem.addLine("frontLeft:" + FL_Power);
-                telem.addLine("FrontRight:" + FR_Power);
-                telem.addLine("BackLeft:" + BL_Power);
-                telem.addLine("BackRight:" + BR_Power);
 
                 motorFL.setPower(FL_Power);
                 motorFR.setPower(FR_Power);
@@ -135,10 +131,6 @@ public class Johnathan_X {
                 FR_Power = (y - x - turn) / denominator;
                 BL_Power = (y - x + turn) / denominator;
                 BR_Power = (y + x - turn) / denominator;
-                telem.addLine("frontLeft:" + FL_Power);
-                telem.addLine("FrontRight:" + FR_Power);
-                telem.addLine("BackLeft:" + BL_Power);
-                telem.addLine("BackRight:" + BR_Power);
 
                 motorFL.setPower(FL_Power);
                 motorFR.setPower(FR_Power);
@@ -149,7 +141,7 @@ public class Johnathan_X {
     }
     public void waitForMotors() {
         boolean finished = false;
-        while (auton.opModeIsActive() && !finished && !auton.isStopRequested()) {
+        while (/*auton.opModeIsActive() &&*/ !finished /*&& !auton.isStopRequested()*/) {
             if (!motorFL.isBusy() && !motorFR.isBusy() && !motorBL.isBusy() && !motorBR.isBusy()) {
                 finished = true;
             }
@@ -164,18 +156,37 @@ public class Johnathan_X {
     }
     public void moveForwardInches(double inches, double speed) {
         //Converts to integer by rounding. CASTS to int after rounding.
-        int tickTarget = (int) Math.round(-inches * Y_INCH_TICKS);
+        int tickTarget = (int) Math.round(inches * Y_INCH_TICKS);
         resetDriveEncoders();
         for (DcMotor x : allDriveMotors) {
-
             x.setTargetPosition(tickTarget);
             x.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         }
         move(0, speed, 0);
-       // waitForMotors();
+        waitForMotors();
         resetDriveEncoders();
     }
 
+    public void moveBackwardInches(double inches, double speed){
+        moveForwardInches(-inches, -speed);
+    }
 
+    public void moveRightInches(double inches, double speed){
+        int tickTarget = (int) Math.round(inches * X_INCH_TICKS);
+        resetDriveEncoders();
+        motorFL.setTargetPosition(tickTarget);
+        motorFR.setTargetPosition(-tickTarget);
+        motorBL.setTargetPosition(-tickTarget);
+        motorBR.setTargetPosition(tickTarget);
+        for (DcMotor x : allDriveMotors){
+            x.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+        move(speed, 0, 0);
+        waitForMotors();
+        resetDriveEncoders();
+    }
+
+    public void moveLeftInches(double inches, double speed){
+        moveRightInches(-inches, -speed);
+    }
 }

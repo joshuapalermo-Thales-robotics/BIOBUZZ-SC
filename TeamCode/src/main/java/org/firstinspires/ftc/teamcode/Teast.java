@@ -13,6 +13,18 @@ public class Teast extends OpMode {
 
     }
     public void loop(){
-        johnX.moveForwardInches(20, .7);
+        double x = gamepad1.left_stick_x;
+        double y = gamepad1.left_stick_y;
+        double turn = gamepad1.right_stick_x/2;
+
+        x *= x;
+        if (gamepad1.left_stick_x < 0){
+            x = -x;
+        }
+        y *= y;
+        if (gamepad1.left_stick_y < 0){
+            y = -y;
+        }
+        johnX.move(x, y, turn);
     }
 }
