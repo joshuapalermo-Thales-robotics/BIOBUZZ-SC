@@ -75,7 +75,7 @@ public class Johnathan_X {
                         RevHubOrientationOnRobot.UsbFacingDirection.LEFT));
                 imu.initialize(parameters);*/
                 break;
-            //TEST
+            //TEST.YEET
             case TEST:
                 motorFL = hwMap.dcMotor.get("motorFL");
                 motorFR = hwMap.dcMotor.get("motorFR");

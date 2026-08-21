@@ -10,7 +10,6 @@ public class Teast extends OpMode {
 
     public void init(){
         johnX = new Johnathan_X(this, Johnathan_X.Drivetrain.JOHNX);
-
     }
     public void loop(){
         double x = gamepad1.left_stick_x;
@@ -22,9 +21,16 @@ public class Teast extends OpMode {
             x = -x;
         }
         y *= y;
-        if (gamepad1.left_stick_y < 0){
+        if (gamepad1.left_stick_y > 0){
             y = -y;
         }
+        if (gamepad1.right_trigger > 0){
+            x /= 3;
+            y /= 3;
+            turn /= 2;
+        }
+
         johnX.move(x, y, turn);
     }
+
 }
