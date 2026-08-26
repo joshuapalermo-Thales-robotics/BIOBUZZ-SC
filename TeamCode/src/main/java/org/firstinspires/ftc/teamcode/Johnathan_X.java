@@ -35,6 +35,7 @@ public class Johnathan_X {
     private static final boolean USE_WEBCAM = true;
     static final double X_INCH_TICKS = 45;
     static final double Y_INCH_TICKS = 45;
+    static final double X_DEGREE_TICKS = 11.1;
 
     //I don't use comments
     public Johnathan_X(OpMode opmode, Drivetrain drivetrain){
@@ -141,7 +142,7 @@ public class Johnathan_X {
     }
     public void waitForMotors() {
         boolean finished = false;
-        while (/*auton.opModeIsActive() &&*/ !finished /*&& !auton.isStopRequested()*/) {
+        while (auton.opModeIsActive() && !finished && !auton.isStopRequested()) {
             if (!motorFL.isBusy() && !motorFR.isBusy() && !motorBL.isBusy() && !motorBR.isBusy()) {
                 finished = true;
             }
@@ -188,5 +189,23 @@ public class Johnathan_X {
 
     public void moveLeftInches(double inches, double speed){
         moveRightInches(-inches, -speed);
+    }
+
+    public void turnRightDegrees(double degrees, double speed){
+        int tickTarget = (int) Math.round(degrees * X_DEGREE_TICKS);
+        resetDriveEncoders();
+        motorFL.setTargetPosition(tickTarget);
+        motorFR.setTargetPosition(-tickTarget);
+        motorBL.setTargetPosition(tickTarget);
+        motorBR.setTargetPosition(-tickTarget);
+        for (DcMotor x : allDriveMotors){
+            x.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+        move(0, 0, speed);
+        waitForMotors();
+        resetDriveEncoders();
+    }
+    public void turnLeftDegrees(double degrees, double speed){
+        turnRightDegrees(-degrees, -speed);
     }
 }
