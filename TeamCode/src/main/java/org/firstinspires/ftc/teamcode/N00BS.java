@@ -13,10 +13,10 @@ public class N00BS extends LinearOpMode {
     // Possibly SCBB
     private ElapsedTime runtime = new ElapsedTime();
     /*
-    Boom Crash
     Don't make auton go for too long...
     OR ELSE
     U get foul
+    YEET_WAGON
      */
     @Override
     public void runOpMode(){

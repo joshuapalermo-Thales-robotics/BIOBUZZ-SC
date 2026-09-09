@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -7,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -27,6 +31,8 @@ public class Johnathan_X {
 
     public DcMotor motorFL, motorFR, motorBL, motorBR;
     public DcMotor[] allDriveMotors;
+
+    public RevColorSensorV3 c0l0rs;
 
     /*public IMU imu;
     private IMU.Parameters parameters;*/
@@ -67,11 +73,12 @@ public class Johnathan_X {
                 motorBL = hwMap.dcMotor.get("motorBL");
                 motorBR = hwMap.dcMotor.get("motorBR");
 
+                c0l0rs = hwMap.get(RevColorSensorV3.class, "colorSensed");
+
                 allDriveMotors = new DcMotor[]{motorBR,motorBL,motorFL,motorFR};
                 motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
                 motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
-
-                /*parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                /* parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
                         RevHubOrientationOnRobot.UsbFacingDirection.LEFT));
                 imu.initialize(parameters);*/
@@ -170,6 +177,20 @@ public class Johnathan_X {
 
     public void moveBackwardInches(double inches, double speed){
         moveForwardInches(-inches, -speed);
+    }
+
+    public void getHSV(){
+        final float[] hsvValue = new float[3];
+        NormalizedRGBA color = c0l0rs.getNormalizedColors();
+        Color.colorToHSV(color.toColor(), hsvValue);
+        telem.addData("R:", color.red);
+        telem.addData("G:", color.green);
+        telem.addData("B:", color.blue);
+        telem.update();
+    }
+
+    public void seeGreen(){
+
     }
 
     public void moveRightInches(double inches, double speed){
