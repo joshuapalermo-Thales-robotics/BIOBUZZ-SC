@@ -32,6 +32,18 @@ public class Teast extends OpMode {
         }
 
         johnX.move(x, y, turn);
+
+        if (gamepad2.dpad_up){
+
+        } else if (gamepad2.dpad_down){
+
+        }
+        if (gamepad2.x){
+
+        }
+        if (gamepad2.right_trigger > 0){
+
+        }
     }
 
 }

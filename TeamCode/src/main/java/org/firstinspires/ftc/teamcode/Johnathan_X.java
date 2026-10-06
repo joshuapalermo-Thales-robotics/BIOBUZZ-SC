@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -29,7 +30,8 @@ public class Johnathan_X {
     private Drivetrain drive;
     private Telemetry telem;
 
-    public DcMotor motorFL, motorFR, motorBL, motorBR;
+    public Servo servoClaw;
+    public DcMotor motorFL, motorFR, motorBL, motorBR, motorLaunch, motorViper;
     public DcMotor[] allDriveMotors;
 
     public RevColorSensorV3 c0l0rs;
@@ -89,6 +91,10 @@ public class Johnathan_X {
                 motorFR = hwMap.dcMotor.get("motorFR");
                 motorBL = hwMap.dcMotor.get("motorBL");
                 motorBR = hwMap.dcMotor.get("motorBR");
+
+                motorLaunch = hwMap.dcMotor.get("motorLaunch");
+                motorViper = hwMap.dcMotor.get("motorViper");
+                servoClaw = hwMap.servo.get("servoClaw");
 
                 allDriveMotors = new DcMotor[]{motorBR,motorBL,motorFL,motorFR};
                 motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
